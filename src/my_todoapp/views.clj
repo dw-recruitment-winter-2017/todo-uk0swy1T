@@ -27,7 +27,21 @@
    [:p "To do list items"]
    [:ul
    (for [loc all-items]
-     [:li (:todo loc)])])))
+     [:li (:todo loc)])]
+   [:form {:action "/" :method "POST"}
+   [:p "task: " [:input {:type "text" :name "x"}]]
+   [:p [:input {:type "submit" :value "add item"}]]])))
+
+(defn add-todo-results-page
+  [{:keys [x]}]
+  (let [id (db/add-todo-to-db x)]
+    (hic-p/html5
+     (gen-page-head "Added a todo")
+     header-links
+     [:h1 "Added a todo"]
+     [:p "Back to the "
+      [:a {:href (str "/")} "list"]
+      "."])))
 
 (defn about-page
   []
