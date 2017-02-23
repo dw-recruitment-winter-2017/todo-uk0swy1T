@@ -7,6 +7,11 @@
   [title]
   [:head
    [:title (str "Todo list: " title)]
+   [:link
+    {:href
+     "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Clojure_logo.svg/220px-Clojure_logo.svg.png",
+     :type "image/png",
+     :rel "icon"}]
    (hic-p/include-css "/css/styles.css")])
 
 (def header-links
@@ -23,14 +28,14 @@
   (hic-p/html5
    (gen-page-head "Home")
    header-links
+   [:div {:class "main"}
    [:h1 "Home"]
    [:p "To do list items"]
    [:ul
    (for [loc all-items]
-     [:li (:todo loc)])]
+     [:li (when (:done loc) {:class "thisdone"}) (:todo loc)])]
    [:form {:action "/" :method "POST"}
-   [:p "task: " [:input {:type "text" :name "x"}]]
-   [:p [:input {:type "submit" :value "add item"}]]])))
+   [:p "task: " [:input {:type "text" :name "x"}] [:input {:type "submit" :value "add item"}]]]])))
 
 (defn add-todo-results-page
   [{:keys [x]}]
@@ -48,5 +53,7 @@
   (hic-p/html5
     (gen-page-head "About")
     header-links
+    [:div {:class "main"}
     [:h1 "About"]
-    [:p "First crack at Clojure"]))
+    [:p "First crack at Clojure"]
+    [:p "If a task is complete it will be have a line through it"]]))

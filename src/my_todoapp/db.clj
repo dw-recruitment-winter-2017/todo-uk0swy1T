@@ -4,6 +4,9 @@
 (def db-spec {:classname "org.h2.Driver"
               :subprotocol "h2:file"
               :subname "db/todo-db"})
+;; Just realized that the java.jdbc version has been deprecated since 2013
+;; this is why query or update! is not working
+;; should have checked date on source...
 
 (defn add-todo-to-db
   [x]
