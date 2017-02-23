@@ -19,11 +19,15 @@
 
 (defn home-page
   []
+  (let [all-items (db/get-all-todos)]
   (hic-p/html5
    (gen-page-head "Home")
    header-links
    [:h1 "Home"]
-   [:p "To do list to come"]))
+   [:p "To do list items"]
+   [:ul
+   (for [loc all-items]
+     [:li (:todo loc)])])))
 
 (defn about-page
   []
