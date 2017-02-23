@@ -1,11 +1,18 @@
 (ns my-todoapp.handler
-  (:require [compojure.core :refer :all]
-            [compojure.route :as route]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+  (:require [my-todoapp.views :as views]
+            [compojure.core :as cc]
+            [compojure.handler :as handler]
+            [compojure.route :as route]))
 
-(defroutes app-routes
-  (GET "/" [] "Hello World")
+(cc/defroutes app-routes
+  (cc/GET "/"
+       []
+       (views/home-page))
+  (cc/GET "/about"
+       []
+       (views/about-page))
+  (route/resources "/")
   (route/not-found "Not Found"))
 
 (def app
-  (wrap-defaults app-routes site-defaults))
+  (handler/site app-routes))
