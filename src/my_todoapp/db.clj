@@ -4,31 +4,32 @@
 (def db-spec {:classname "org.h2.Driver"
               :subprotocol "h2:file"
               :subname "db/todo-db"})
-;; Just realized that the java.jdbc version has been deprecated since 2013
-;; this is why query or update! is not working
-;; should have checked date on source...
 
 (defn add-todo-to-db
   [x]
-  (let [results (sql/with-connection db-spec
-                  (sql/insert-record :locations
-                                     {:todo x :done false}))]
-    (assert (= (count results) 1))
-    (first (vals results))))
+  (let [results (sql/insert! db-spec :locations
+                                     {:todo x :done false})]
+    (vals results)))
 
 (defn get-todo
   [todo-id]
-  (let [results (sql/with-connection db-spec
-                  (sql/with-query-results res
-                    ["select todo, done from locations where id = ?" todo-id]
-                    (doall res)))]
-    (assert (= (count results) 1))
-    (first results)))
+  (let [results (sql/query db-spec
+                    ["SELECT * FROM locations WHERE id = ?" todo-id])]
+    results))
 
 (defn get-all-todos
   []
-  (let [results (sql/with-connection db-spec
-                  (sql/with-query-results res
-                    ["select id, todo, done from locations"]
-                    (doall res)))]
+  (let [results (sql/query db-spec
+                    ["select * from locations"])]
     results))
+
+(defn completed-todo
+  [x y]
+  (let [results (sql/update! db-spec :locations
+                    {:done y} ["id = ?" x])]
+    (vals results)))
+
+(defn delete-todo
+  [x]
+  (let [results (sql/delete! db-spec :locations ["id = ?" x])]
+    (vals results)))

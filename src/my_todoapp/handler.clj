@@ -6,14 +6,20 @@
 
 (cc/defroutes app-routes
   (cc/GET "/"
-       []
-       (views/home-page))
+       {params :params}
+        (views/home-page params))
   (cc/GET "/about"
        []
        (views/about-page))
-  (cc/POST "/"
+  (cc/POST "/add/"
         {params :params}
-        (views/add-todo-results-page params))
+        (views/home-page params))
+  (cc/POST "/toggle/:id"
+           [id]
+           (views/toggle-todo-page id))
+  (cc/POST "/delete/:id"
+           [id]
+           (views/delete-todo-page id))
   (route/resources "/")
   (route/not-found "Not Found"))
 

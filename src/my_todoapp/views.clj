@@ -23,7 +23,8 @@
    " ]"])
 
 (defn home-page
-  []
+  [{:keys [x]}]
+  (if-not (nil? x) (let [id (db/add-todo-to-db x)]))
   (let [all-items (db/get-all-todos)]
   (hic-p/html5
    (gen-page-head "Home")
@@ -33,8 +34,14 @@
    [:p "To do list items"]
    [:ul
    (for [loc all-items]
-     [:li (when (:done loc) {:class "thisdone"}) (:todo loc)])]
-   [:form {:action "/" :method "POST"}
+     (if (:done loc)
+       [:li {:id (str (:id loc)) :class "thisdone"} (:todo loc) [:form {:action (str "/toggle/" (:id loc)) :method "POST"}
+      [:input {:type "submit" :value "toggle"}]] [:form {:action (str "/delete/" (:id loc)) :method "POST"}
+      [:input {:type "submit" :value "delete"}]]]
+       [:li {:id (str (:id loc))} (:todo loc) [:form {:action (str "/toggle/" (:id loc)) :method "POST"}
+      [:input {:type "submit" :value "toggle"}]] [:form {:action (str "/delete/" (:id loc)) :method "POST"}
+      [:input {:type "submit" :value "delete"}]]]))]
+   [:form {:action "/add/" :method "POST"}
    [:p "task: " [:input {:type "text" :name "x"}] [:input {:type "submit" :value "add item"}]]]])))
 
 (defn add-todo-results-page
@@ -48,6 +55,31 @@
       [:a {:href (str "/")} "list"]
       "."])))
 
+(defn toggle-todo-page
+  [x]
+  (let [itemdet (first (db/get-todo x))]
+    (let [ans (db/completed-todo x (false? (:done itemdet)))]
+      (hic-p/html5
+       (gen-page-head "Toggle a todo")
+       header-links
+       [:h1 "Toggle a todo"]
+       [:p "You have marked " (:todo itemdet) " as " (if (false? (:done itemdet))
+       "done"
+       "incomplete") ]
+       [:p "Back to the "
+        [:a {:href (str "/")} "list"]
+        "."]))))
+(defn delete-todo-page
+  [x]
+  (let [id (db/delete-todo x)]
+    (hic-p/html5
+     (gen-page-head "Deleted a todo")
+     header-links
+     [:h1 "Deleted a todo"]
+     [:p "Back to the "
+      [:a {:href (str "/")} "list"]
+      "."])))
+
 (defn about-page
   []
   (hic-p/html5
@@ -56,4 +88,4 @@
     [:div {:class "main"}
     [:h1 "About"]
     [:p "First crack at Clojure"]
-    [:p "If a task is complete it will be have a line through it"]]))
+    [:p "If a task is complete it will have a line through it"]]))
