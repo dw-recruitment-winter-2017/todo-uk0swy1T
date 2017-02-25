@@ -182,3 +182,7 @@ button {
   -webkit-flex-direction: row;
   flex-direction: row;
 }
+
+li form {
+  padding-left: 5px;
+}
